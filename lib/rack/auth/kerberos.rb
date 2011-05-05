@@ -1,4 +1,4 @@
-require 'krb5_auth'
+require 'rkerberos'
 
 # The Rack module serves as a namespace only.
 module Rack
@@ -11,9 +11,9 @@ module Rack
       # The version of the rack-auth-kerberos library.
       VERSION = '0.3.0'
 
-      # Creates a new Rack::Kerberos object. The +user_field+ and +password_field+
-      # are the params looked for in the call method. The defaults are 'username'
-      # and 'password', respectively.
+      # Creates a new Rack::Auth::Kerberos object. The +user_field+ and
+      # +password_field+ # are the params looked for in the call method. The
+      # defaults are 'username' and 'password', respectively.
       #
       # If the optional +realm+ parameter is supplied it will override the
       # default realm specified in your krb5.conf file.
@@ -52,8 +52,10 @@ module Rack
       # AUTH_DATETIME           => Time.now.utc
       #
       def call(env)
-        @kerberos = Kerberos::Krb5.new
+        @kerberos = ::Kerberos::Krb5.new
         @realm ||= @kerberos.get_default_realm
+
+        puts "Default realm is: #{@realm}"
 
         @log = "Entering Rack::Auth::Kerberos"
         request = Rack::Request.new(env)
@@ -80,7 +82,7 @@ module Rack
 
         begin
           @kerberos.get_init_creds_password(user_with_realm, password)
-        rescue Kerberos::Krb5::Exception => err
+        rescue ::Kerberos::Krb5::Exception => err
           case err.message
             when /client not found/i
               msg = "Invalid userid '#{user}'"
