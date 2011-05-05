@@ -55,8 +55,6 @@ module Rack
         @kerberos = ::Kerberos::Krb5.new
         @realm ||= @kerberos.get_default_realm
 
-        puts "Default realm is: #{@realm}"
-
         @log = "Entering Rack::Auth::Kerberos"
         request = Rack::Request.new(env)
 
